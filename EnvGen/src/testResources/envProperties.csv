@@ -1,4 +1,6 @@
-"env","devl","test","prod"
-"# This is a comment",,,
-"dir","/d","/t","/p"
-"blankEntry","notprod","notprod",
+# This is an initial comment without commas
+env,devl,test,prod
+# This is a comment,,,
+"# This is a comment that has one, no two, commas.",,,
+dir,/d,/t,/p
+blankEntry,notprod,notprod,

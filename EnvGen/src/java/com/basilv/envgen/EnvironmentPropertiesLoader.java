@@ -38,17 +38,17 @@ public class EnvironmentPropertiesLoader
 				final int FIRST_ROW = 1; 
 				int rowNumber = FIRST_ROW; // Indexed from one.
 				while (reader.readRecord()) {
+					String propertyName = reader.get(0);
+					if (isComment(propertyName)) {
+						continue;
+					}
+					
 					int columnCount = reader.getColumnCount();
 					Assert.isTrue("Must have at least two columns - one for the property name " +
 						"and one row per environment for the property value.", columnCount > 1);
 					if (rowNumber == FIRST_ROW) {
 						int envCount = columnCount - 1;
 						envProps = new EnvironmentProperties(envCount);
-					}
-					
-					String propertyName = reader.get(0);
-					if (isComment(propertyName)) {
-						continue;
 					}
 					
 					for (int column = 1; column < columnCount; column++) {

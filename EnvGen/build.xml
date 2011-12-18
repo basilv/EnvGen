@@ -37,10 +37,10 @@
 	<property name="junit.dir" location="${tools.dir}/${junit.name}/${junit.version}"/>
 	<property name="junit.jar" location="${junit.dir}/junit-4.5.jar"/>
 
-	<property name="freemarker.version" value="freemarker-2.3.15"/>
+	<property name="freemarker.version" value="freemarker-2.3.18"/>
 	<property name="freemarker.name" value="FreeMarker"/>
 	<property name="freemarker.dir" location="${tools.dir}/${freemarker.name}/${freemarker.version}"/>
-	<property name="freemarker.jar" location="${freemarker.dir}/lib/freemarker.jar"/>
+	<property name="freemarker.jar" location="${freemarker.dir}/freemarker-2.3.18.jar"/>
 
 	<property name="log4j.version" value="log4j-1.2.14"/>
 	<property name="log4j.name" value="log4j"/>
