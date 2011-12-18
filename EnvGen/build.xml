@@ -218,8 +218,7 @@
 		</javadoc>		
 	</target>
 	
-	<!-- TODO: Javadoc. -->
-	<target name="package" depends="package-init, package-jar, package-release-dir">
+	<target name="package" depends="package-init, package-jar, package-release-dir, javadoc">
 		<zip destfile="${release.zip}">
 			<zipfileset dir="${release.dir}" prefix="${module.name}-${module.version}"/>
 		</zip>
