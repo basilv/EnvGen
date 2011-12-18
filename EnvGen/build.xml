@@ -9,9 +9,9 @@
 	
 	<property environment="env"/>
 
-	<property name="build.dir" location="build"/>
+	<property name="build.dir" location="${basedir}/build"/>
 
-	<property name="source.dir" location="src"/>
+	<property name="source.dir" location="${basedir}/src"/>
 	<property name="java.source.dir" location="${source.dir}/java"/>
 	<property name="javatest.source.dir" location="${source.dir}/javatest"/>
 	<property name="resources.source.dir" location="${source.dir}/resources"/>
@@ -54,7 +54,7 @@
 	<property name="javacsv.jar" location="${javacsv.dir}/javacsv.jar"/>
 
 	<!-- Use antlib instead of ant which is already used. -->
-	<property name="antlib.version" value="apache-ant-1.6.5"/>
+	<property name="antlib.version" value="apache-ant-1.7.0"/>
 	<property name="antlib.name" value="Ant"/>
 	<property name="antlib.dir" location="${tools.dir}/${antlib.name}/${antlib.version}"/>
 	<property name="antlib.jar" location="${antlib.dir}/lib/ant.jar"/>
@@ -89,13 +89,16 @@
 
 	<target name="clean" depends="init">
 		<delete dir="${dist.dir}"/>
+		<delete dir="${classes.dir}"/>
+		<delete dir="${test.classes.dir}"/>
+		
 	</target>
 
 	<target name="compile" depends="init">
 		<mkdir dir="${classes.dir}"/>
 		<javac debug="on" includeAntRuntime="false" 
-			source="1.4"
-			target="1.4"
+			source="1.5"
+			target="1.5"
 			destdir="${classes.dir}"
 			classpathref="compile.classpath">
 			<src path="${java.source.dir}"/>
@@ -215,7 +218,8 @@
 		</javadoc>		
 	</target>
 	
-	<target name="package" depends="package-init, package-jar, package-release-dir, javadoc">
+	<!-- TODO: Javadoc. -->
+	<target name="package" depends="package-init, package-jar, package-release-dir">
 		<zip destfile="${release.zip}">
 			<zipfileset dir="${release.dir}" prefix="${module.name}-${module.version}"/>
 		</zip>

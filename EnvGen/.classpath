@@ -8,6 +8,6 @@
 	<classpathentry kind="var" path="TOOLS_DIR/Ant/apache-ant-1.7.0/lib/ant.jar" sourcepath="/TOOLS_DIR/Ant/apache-ant-1.7.0/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="TOOLS_DIR/log4j/logging-log4j-1.2.14/dist/lib/log4j-1.2.14.jar"/>
-	<classpathentry kind="var" path="TOOLS_DIR/JUnit/junit4.4/junit-4.4.jar"/>
-	<classpathentry kind="output" path="build/classes"/>
+	<classpathentry kind="var" path="TOOLS_DIR/JUnit/junit4.5/junit-4.5.jar"/>
+	<classpathentry kind="output" path="build/eclipse-classes"/>
 </classpath>

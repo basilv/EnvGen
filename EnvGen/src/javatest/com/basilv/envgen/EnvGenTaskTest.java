@@ -17,6 +17,7 @@ import com.basilv.core.FileUtilities;
 
 import freemarker.template.Configuration;
 
+
 public class EnvGenTaskTest extends TestCase {
 
 	private File projectRootDir;
@@ -30,7 +31,7 @@ public class EnvGenTaskTest extends TestCase {
 	protected void setUp() throws Exception {
 
         projectRootDir = new File(".").getCanonicalFile();
-        if (!projectRootDir.getName().equals("EnvGen1.4")) {
+        if (!projectRootDir.getName().equals("EnvGen")) {
             projectRootDir = projectRootDir.getParentFile();
         }
 
