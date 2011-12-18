@@ -4,10 +4,10 @@
 	<classpathentry excluding="**/.svn/**/*" kind="src" path="src/javatest"/>
 	<classpathentry exported="true" kind="lib" path="src/resources"/>
 	<classpathentry kind="var" path="TOOLS_DIR/FreeMarker/freemarker-2.3.15/lib/freemarker.jar" sourcepath="/TOOLS_DIR/FreeMarker/freemarker-2.3.10/src"/>
-	<classpathentry kind="var" path="TOOLS_DIR/JavaCSV/javacsv-1.0/csv.jar"/>
 	<classpathentry kind="var" path="TOOLS_DIR/Ant/apache-ant-1.7.0/lib/ant.jar" sourcepath="/TOOLS_DIR/Ant/apache-ant-1.7.0/src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="TOOLS_DIR/log4j/logging-log4j-1.2.14/dist/lib/log4j-1.2.14.jar"/>
 	<classpathentry kind="var" path="TOOLS_DIR/JUnit/junit4.5/junit-4.5.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_02"/>
+	<classpathentry kind="var" path="TOOLS_DIR/JavaCSV/javacsv-2.0/javacsv.jar"/>
 	<classpathentry kind="output" path="build/eclipse-classes"/>
 </classpath>
