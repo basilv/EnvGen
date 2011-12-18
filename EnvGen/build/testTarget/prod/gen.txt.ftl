@@ -1,5 +1,0 @@
-Environment "prod"
-
-
-Directory "/p"
-

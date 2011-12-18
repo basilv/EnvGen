@@ -1,3 +1,0 @@
-
-env=devl
-dir=/d
