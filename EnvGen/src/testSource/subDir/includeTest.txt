@@ -1,0 +1,11 @@
+
+
+This tests doing an include from a parent directory (fixed in EnvGen 1.2)
+
+BEGIN INCLUDE:
+
+<#include "subDir/fileInSubDir.txt"/>
+
+<#include "fileInMainDir.txt"/>
+
+END INCLUDE:

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="EnvGen-Deploy1.4" default="deploy-local" basedir="..">
+
+	<!-- This build file is separate in order to exclude it from the release, as it may contain
+	confidential information.
+	-->
+	
+	<property name="dist.dir" location="dist"/>
+	<property name="release.dir" location="${dist.dir}/release"/>
+	
+	<target name="deploy-local" 
+		description="Deploy EnvGen to local website">
+		
+		<property name="website.software-files.dir" 
+			location="../../Web/basilv.com/local-www/psd/software-files"/>
+
+		<property name="website.envgen.dir" 
+			location="${website.software-files.dir}/EnvGen"/>
+		<mkdir dir="${website.envgen.dir}"/>
+
+		<copy todir="${website.envgen.dir}">
+			<fileset dir="${release.dir}"/>
+		</copy>
+
+		<copy todir="${website.software-files.dir}">
+			<fileset dir="${dist.dir}" includes="EnvGen*.zip"/>
+		</copy>
+
+	</target>
+	
+</project>
+

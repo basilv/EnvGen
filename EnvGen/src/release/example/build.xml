@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="EnvGenExample" default="build">
+
+	<property name="envgen.jar" location="../EnvGen-with-dependencies.jar"/>
+	
+	<property name="dist.dir" location="dist"/>
+	<property name="source.dir" location="src"/>
+	
+	<taskdef name="envgen"
+        classname="com.basilv.envgen.EnvGenTask"
+        classpath="${envgen.jar}"
+    />
+	
+	<target name="clean" description="Delete build output files.">
+		<delete dir="${dist.dir}"/>
+	</target>
+	
+	<target name="build"
+		description="Build example by running EnvGen.">
+
+		<!-- Need to escape ${env} to prevent Ant from trying to expand it. -->
+		<envgen destdir="${dist.dir}/$${env}"
+			envPropertiesFile="envProperties.csv"
+			overwrite="false"
+			stripFileExtension="true"
+			>
+			<source dir="${source.dir}"/>
+			<transform name="mainframeFileFormat" class="com.basilv.envgen.MainframeFileFormatTransform"/>
+			<sharedVariable name="buildNumber" value="100"/>
+		</envgen>
+	</target>
+	
+</project>
+

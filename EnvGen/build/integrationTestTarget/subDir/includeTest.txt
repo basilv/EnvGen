@@ -1,0 +1,11 @@
+
+
+This tests doing an include from a parent directory (fixed in EnvGen 1.2)
+
+BEGIN INCLUDE:
+
+
+This is a test file (fileInSubDir).
+
+This is a test file (fileInMainDir).
+END INCLUDE:

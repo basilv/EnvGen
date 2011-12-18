@@ -1,0 +1,570 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <title>EnvGen</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+<h1>EnvGen - Environment-Specific File Generator</h1>
+
+<p><a href="#Overview">Overview</a> | <a href="#UsersManual">User's Manual</a> | <a href="#ChangeHistory">Change History</a>
+</p>
+
+<h2><a name="Overview"></a>Overview</h2>
+
+<p>EnvGen is an <a href="http://ant.apache.org/">Ant</a>
+task for generating different versions of the same file parameterized for
+different environments (i.e. development, test, and
+production). File generation is done using <a href="http://freemarker.org/">FreeMarker</a>,
+a template engine with a full-featured templating
+language. </p>
+
+<p>You specify environment-specific properties in a CSV
+file
+(comma separated value spreadsheet). EnvGen functions similar
+to Ant's Copy task: you run EnvGen against one or more source filesets
+into a target directory. Rather than simply copying each file over,
+EnvGen generates a version of the target file for each environment
+specified in the properties CSV file. Usually the target directory or
+filename is parameterized by environment so that EnvGen writes each
+version to a different physical file. </p>
+
+<h3>Why Use EnvGen?</h3>
+
+<p>EnvGen is most useful when the technology being used does not
+allow
+environment differences to be parameterized. Frequent examples of this
+that I have come across are database tablespace or other storage
+settings in DDL, and mainframe code where namespaces are typically used
+to provide separate environments. While EnvGen is a surprisingly
+powerful tool, I recommend only using it when you absolutely
+need to. Generation adds an extra level of abstaction and complexity
+that is best avoided if possible. Most code can be parameterized for
+environmental differences without resorting to generation.</p>
+
+<p>EnvGen is essentially an Ant task that wraps the FreeMarker
+template engine. While FreeMarker is a great template engine,
+I found it difficult to use directly because it does not provide any
+useful Ant tasks. The FreeMarker community has addressed this by
+creating <a href="http://fmpp.sourceforge.net/">FMPP</a>,
+a wrapper for FreeMarker that makes it easier to use and includes an
+Ant task. The main different between FMPP and EnvGen is that FMPP is a
+general-purpose text file preprocessor tool with a broad set of
+features, while EnvGen is focused entirely on environment-specific file
+generation and makes this single task much easier to do than
+FMPP.</p>
+
+<h3>Requirements</h3>
+
+<p>EnvGen requires <a href="http://www.java.com/en/download/manual.jsp">Java
+Runtime Environment</a> (JRE) version 1.4.2+ and <a href="http://ant.apache.org/">Ant</a> 1.6.5+.</p>
+
+<h3>Legal</h3>
+
+<p>EnvGen is copyright
+&copy; 2007-2009 by Basil Vandegriend. The software is licensed for use
+under the terms of the <a href="http://www.gnu.org/copyleft/gpl.html">GNU General
+Public License</a>
+(GPL). </p>
+
+<p>The software is provided for use
+as-is, and is not warranted to be defect-free or to meet your
+requirements.</p>
+
+<h3>Download</h3>
+
+<p>The latest version of EnvGen
+can be downloaded from <a href="http://www.basilv.com/psd/software">www.basilv.com/psd/software</a>.
+</p>
+
+<h3>Feedback</h3>
+
+<p>Feedback concerning this
+software is appreciated, and can be provided on the <a href="http://basilv.com/psd/software/software-feedback">Software
+Feedback</a> page. I would appreciate hearing if you find the
+software useful and make use of it regularly.</p>
+
+
+<h2><a name="UsersManual"></a>User's Manual</h2>
+
+<h3>Overview</h3>
+
+<p>
+The basic steps to use EnvGen are as follows:
+</p>
+
+<ol>
+
+  <li>Install <a href="http://ant.apache.org/">Ant</a>.</li>
+
+  <li><a href="#InstallEnvGen">Install EnvGen</a>.
+  </li>
+
+  <li><a href="#DefineEnvGenTask">Define the EnvGen task within the Ant build</a>.
+  </li>
+
+  <li><a href="#CreateEnvPropertiesFile">Create the environment properties file</a>.
+  </li>
+
+  <li><a href="#CreateTemplateFile">Create the template file(s)</a>.
+  </li>
+
+  <li><a href="#InvokeEnvGen">Invoke the EnvGen task within the Ant build</a>.</li>
+
+</ol>
+
+<p>
+The <a href="example"><code>example</code></a>
+directory included with EnvGen can be used as a starting point for
+using EnvGen and is referenced within this manual.</p>
+
+<p>The <a href="#AdvancedTopics">last section</a>
+of this manual covers&nbsp;more <a href="#AdvancedTopics">advanced
+topics</a> regarding the use of EnvGen. </p>
+
+<h3><a name="InstallEnvGen">Installing EnvGen</a></h3>
+
+<p>
+To install EnvGen simply unzip the <code>EnvGen-1.X.zip</code>
+file into an appropriate directory. The contents of the zip file will
+be contained within a root directory <code>EnvGen-1.X</code>.
+</p>
+
+<p>The contents of an EnvGen release (zip file) includes the
+following files and directories:
+</p>
+
+<ul>
+
+  <li><code>EnvGen-with-dependencies.jar</code> - Jar
+file containing EnvGen class files plus all dependent libraries.</li>
+
+  <li><a href="dependencies-list.txt"><code>dependencies-list.txt</code></a>
+- Text file listing the dependent libraries and their versions used to
+develop and test EnvGen. These libraries are included in the <code>EnvGen-with-dependencies.jar</code>
+file.</li>
+
+  <li><code>EnvGen.jar</code> - Jar file containing
+only EnvGen class files. Use this jar when you want to use a different
+version of one of the dependent libraries.</li>
+
+  <li><a href="example"><code>/example</code></a>
+- This directory contains a simple example of how to use EnvGen which
+is referenced in this manual.</li>
+
+  <li><a href="src"><code>/src</code></a>
+- Source code for EnvGen.</li>
+
+  <li><a href="javadoc/index.html">API Documentation</a>
+- JavaDoc API documentation for EnvGen.</li>
+
+  <li><a href="build/build.xml"><code>/build/build.xml</code></a>
+- Ant build file for EnvGen.</li>
+
+</ul>
+
+<h3><a name="DefineEnvGenTask">Defining the EnvGen task</a></h3>
+
+<p>
+To use the EnvGen Ant task as part of an Ant build, it must first be
+defined within that build file. The easiest way to do this is to use <code>&lt;taskdef&gt;</code>
+and specify the <code>EnvGen-with-dependencies.jar</code>
+jar file for the classpath as per the following excerpt taken from the
+example <a href="example/build.xml"><code>build.xml</code></a>:
+</p>
+
+<pre>&lt;taskdef name="envgen"<br> classname="com.basilv.envgen.EnvGenTask"<br> classpath="${envgen.dir}/EnvGen-with-dependencies.jar"<br>/&gt;<br></pre>
+
+<p>If you want to use a different version of one of the dependent
+libraries such as FreeMarker, then you can specify a classpath that
+includes <code>EnvGen.jar</code> plus the desired versions
+of all the required libraries.
+</p>
+
+<h3><a name="CreateEnvPropertiesFile">Creating the Environment Properties File</a></h3>
+
+<p>
+Environment-specific settings are specified in an environment
+properties file which is a CSV-formatted spreadsheet. Each row
+corresponds to a single property or a comment. For a property, the
+first column contains the name of
+the property. Each subsequent column contains the value of the property
+for a single environment. A row whose first column is empty or contains
+text starting with '#' or '//' is considered to be a comment
+which causes that line to be ignored.
+</p>
+
+<p>The example environment properties file <a href="example/envProperties.csv"><code>envProperties.csv</code></a>
+is listed below (without the comments).
+It defines three properties named "env", "server", and "database" for
+three environments.
+</p>
+
+<table class="fancy" cellspacing="0">
+  <tbody>
+    <tr>
+      <td>env</td>
+      <td>devl</td>
+      <td>test</td>
+      <td>prod</td>
+    </tr>
+    <tr>
+      <td>server</td>
+      <td>intel-010-d</td>
+      <td>intel-021-t</td>
+      <td>intel-025-p</td>
+    </tr>
+    <tr>
+      <td>database</td>
+      <td>app-d1</td>
+      <td>app-t1</td>
+      <td>app-p1</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h3><a name="CreateTemplateFile">Creating the Template File(s)</a></h3>
+
+<p>
+You must create one or more template files to supply to EnvGen to use
+as the basis for generating the environment-specific files based on the
+properties you defined in the environment properties file. The template
+files can be any type of text file.
+Since EnvGen uses <a href="http://freemarker.sourceforget.net">FreeMarker</a>
+as the template engine, you need to use the <a href="http://freemarker.sourceforge.net/docs/index.html">FreeMarker
+Template Language</a> within each template file to specify
+property substitutions or to use more advanced logic.
+</p>
+
+<p>Most commonly you will want to substitute properties defined
+in the environment properties file into the template file.
+This is done using the syntax <code>${&lt;propertyname&gt;}</code>. For
+example, given the "env" property defined in the example environment
+property file above,
+a line in the template file consisting of <code>"Environment =
+${env}"</code> will be transformed into the output <code>"Environment
+= devl"</code> for the first environment.
+</p>
+
+<p>See the example template file <code>environment-summary.txt.ftl</code>.
+The contents of this file are reproduced below:
+</p>
+
+<pre>
+Summary for Environment "${env}"
+------------------------------
+
+Build number ${buildNumber}
+
+&lt;#if env="devl"&gt;
+This is development!
+&lt;/#if&gt;
+
+Server: ${server}
+Database: ${database}
+</pre>
+
+<h3><a name="InvokeEnvGen">Invoking the EnvGen Task</a></h3>
+
+<p>EnvGen is invoked from within an Ant build like any other Ant
+task. This section describes how to invoke EnvGen as an Ant task.
+</p>
+
+<h4>Parameters</h4>
+
+<p>The attributes supported by the EnvGen task are:</p>
+
+<table class="fancy" cellspacing="0">
+  <tbody>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+      <th>Required?</th>
+    </tr>
+
+    <tr>
+      <td>envPropertiesFile</td>
+      <td>The CSV file containing the environment-specific
+properties.</td>
+      <td>Yes</td>
+    </tr>
+
+    <tr>
+      <td>destDir</td>
+      <td>The destination directory to write the generated files
+to. This directory can be parameterized in which case the actual
+directory path will be generated for each environment. </td>
+      <td>Yes</td>
+    </tr>
+
+    <tr>
+      <td>stripFileExtension</td>
+      <td>Strip the right-most file extension (from the last
+period right) from the generated filename. For example "test.txt.ftl"
+would be changed to "test.txt". </td>
+      <td>No; defaults to false</td>
+    </tr>
+
+    <tr>
+      <td>overwrite</td>
+      <td>Overwrite existing files even if the destination file is up to date. even if the destination files
+are newer than both the source file and the environment properties
+file. </td>
+      <td>No; defaults to false</td>
+    </tr>
+
+    <tr>
+      <td>diffToUpdate</td>
+      <td>By default (<code>overwrite = "false"</code> and <code>diffToUpdate = "false"</code>),
+each destination file is only generated if it is older than either the
+source file or the environment properties file. When
+diffToUpdate&nbsp;is set to true, then the generation is done and the
+destination file is updated only if the generated content is different
+from the existing content. This is useful when the FreeMarker <code>&lt;#include&gt;</code>
+directive is used since a change to an included file will
+not&nbsp;trigger a regeneration if the source file was not changed. The
+content comparison ignores differences in line endings, in case the <code>&lt;fixcrlf&gt;</code> task is executed against EnvGen's output.</td>
+      <td>No; defaults to false</td>
+    </tr>
+  
+  </tbody>
+</table>
+
+<h4>Parameter Specified as Nested Elements</h4>
+
+<p>The nested elements supported by the EnvGen task are:</p>
+
+<h5>Source</h5>
+
+<p>
+Each <code>&lt;source&gt;</code> is an implicit
+fileset used to select groups of files to generate.
+</p>
+
+<h5>Transform</h5>
+
+<p>
+Transforms are a feature of FreeMarker that allow for the programmatic
+transformation of a block within a template file. A transform is
+implemented as a Java class and must be registered with the FreeMarker
+engine via this element.
+The <code>&lt;transform&gt;</code> element has the
+following attributes:
+</p>
+
+<table class="fancy" cellspacing="0">
+  <tbody>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+      <th>Required?</th>
+    </tr>
+
+    <tr>
+      <td>name</td>
+      <td>The name of the variable storing the transform, used
+within the template file to invoke it. The name must correspond to a
+java identifier: in particular, it cannot contain periods or dashes. </td>
+      <td>Yes</td>
+    </tr>
+
+    <tr>
+      <td>class</td>
+      <td>The name of the transform class. This class must be
+accessible on the classpath.</td>
+      <td>Yes</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>EnvGen comes with the following built-in templates:</p>
+
+<table class="fancy" cellspacing="0">
+  <tbody>
+    <tr>
+      <th>Template Class</th>
+      <th>Description</th>
+    </tr>
+
+    <tr>
+      <td><code>com.basilv.envgen.MainframeFileFormatTransform</code></td>
+      <td>Transforms input into a format acceptable for
+mainframes. Tabs are converted to 4 spaces. Whitespace is trimmed from
+the end of lines. The transform will fail with an error message if any
+line is longer than 75 characters. </td>
+    </tr>
+
+    <tr>
+      <td><code>com.basilv.envgen.SkipGenerationTransform</code></td>
+      <td>Skips the generation of the target file, deleting it if it previously existed.
+This is useful when you are generating multiple files for multiple environments and certain files are 
+not needed in certain environments. This transform is only useful within conditional logic like 
+FreeMarker's <code>&lt;#if&gt;</code> directive in order to allow the file to still be generated for certain environments.</td>
+    </tr>
+  
+  </tbody>
+</table>
+
+<h5>SharedVariable</h5>
+
+<p>
+Shared variables are a feature of FreeMarker that allow for a variable
+to be defined once up front and be available for use within all
+template files.
+The <code>&lt;sharedVariable&gt;</code> element
+has the following attributes:
+</p>
+
+<table class="fancy" cellspacing="0">
+  <tbody>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+      <th>Required?</th>
+    </tr>
+
+    <tr>
+      <td>name</td>
+      <td>The name of the variable, used within the template file
+to access it. The name must correspond to a java identifier: in
+particular, it cannot contain periods or dashes. </td>
+      <td>Yes</td>
+    </tr>
+
+    <tr>
+      <td>value</td>
+      <td>The value of the variable.</td>
+      <td>Yes</td>
+    </tr>
+  
+  </tbody>
+</table>
+
+<h4>Example</h4>
+
+<p>The sample invocation below is taken from the example <a href="example/build.xml"><code>build.xml</code></a>
+provided as part of the release.
+</p>
+
+<pre>
+&lt;envgen destdir="${dist.dir}/$${env}"
+	envPropertiesFile="envProperties.csv"
+	overwrite="false"
+	stripFileExtension="true"
+&gt;
+	&lt;source dir="${source.dir}"/&gt;
+	&lt;transform name="mainframeFileFormat" class="com.basilv.envgen.MainframeFileFormatTransform"/&gt;
+	&lt;sharedVariable name="buildNumber" value="100"/&gt;
+&lt;/envgen&gt;
+</pre>
+
+This generates files from the <code>${source.dir}</code>
+directory for each environment specified in the <code>envProperties.csv</code>
+file and puts them in the target directory based on the environment
+property <code>env</code>. If the ant property <code>${dist.dir}</code>
+is set to <code>/dist</code>
+and the environment properties file specifies one value of <code>env</code>
+as <code>devl</code>, then the target directory for this
+environment would be <code>/dist/devl</code>.
+
+<h3><a name="AdvancedTopics">Advanced Topics</a></h3>
+
+<p>
+This section covers more advanced topics when using EnvGen.
+</p>
+
+<h4>Using FreeMarker's &lt;#include&gt; Directive</h4>
+
+<p>
+When using FreeMarker's <code>&lt;#include&gt;</code>
+directive, the path
+you specify to the file must be relative to the base directory of the
+fileset the file is in. For an example, consider the following
+directory structure:
+</p>
+
+<pre>/src<br>&nbsp;&nbsp;common.txt<br>&nbsp;&nbsp;/resources<br>&nbsp;&nbsp;&nbsp;&nbsp;common-resources.txt<br>&nbsp;&nbsp;&nbsp;&nbsp;properties.txt.ftl<br></pre>
+
+<p>
+EnvGen is run against the root <code>/src</code>
+directory. The <code>properties.txt.ftl</code> file can
+include <code>common.txt</code> and <code>common-resources.txt</code>
+via the following include directives:
+</p>
+
+<pre>&lt;#include "common.txt"&gt;<br>&lt;#include "resources/common-resources.txt"&gt;<br></pre>
+
+<p>
+One limitation of EnvGen when using <code>&lt;#include&gt;</code>
+is that EnvGen will not rebuild target files when only included files
+are modified. For the above example, if only <code>common.txt</code>
+is changed, then EnvGen will not regenerate <code>properties.txt</code>.
+There are several workarounds for this limitation. The easiest workaround is to set the attribute <code>diffToUpdate = "true"</code>,
+which will not rely on timestamps to determine whether to regenerate,
+but instead do the generation and then only update the target file if
+the generated content has changed. Other workarounds include using
+Ant's <code>&lt;dependset&gt;</code> task, a <a href="http://martinfowler.com/bliki/TouchFile.html">touch file</a>, or to set <code>override = "true"</code>.
+</p>
+
+<h2><a name="ChangeHistory">Change History</a></h2>
+
+<p>
+Minor releases have version numbers of the form A.B.C and only contain defect fixes or documentation improvements.
+Major releases have version numbers of the form A.B and contain new features or feature enhancements.
+</p>
+
+<h3>Version 1.3.1 - January, 2009</h3>
+<ul>
+  <li>Upgraded to FreeMarker 2.3.15.</li>
+  <li>Known Defects: A defect has been reported against EnvGen 1.3 using FreeMarker's include directive on Unix systems 
+  in a template file located in a subdirectory of the root directory. FreeMarker cannot resolve the include and will 
+  display an error message containing the following  
+  "Caused by: freemarker.template.TemplateException: Error reading included file ...".
+  </li> 
+</ul>
+
+
+<h3>Version 1.3 - August, 2007</h3>
+<ul>
+
+  <li>Added the <code>com.basilv.envgen.SkipGenerationTemplate</code> template, 
+  which allows you to avoid generating a file for one or more environments.</li>
+
+</ul>
+
+<h3>Version 1.2.1 - June, 2007</h3>
+<ul>
+  <li>Improved error messages reported by Ant by including FreeMarker error text.</li>
+</ul>
+
+<h3>Version 1.2 - May, 2007</h3>
+<ul>
+  <li>Upgraded to FreeMarker 2.3.10</li>
+  <li>Fixed a defect:&nbsp;the use of FreeMarker's
+    <code>&lt;#include&gt;</code> directive did not work when including files in
+other directories. The &lt;#include&gt; directive now can be
+used to include any file within the same fileset. The file path you
+specify must be relative to the fileset base directory.</li>
+
+  <li>Added the <code>diffToUpdate</code> attribute to make it easier to use FreeMarker's <code>&lt;#include&gt;</code> directive.</li>
+</ul>
+
+<h3>Version 1.1 - April, 2007</h3>
+<ul>
+  <li>Added support for comments and blank lines within the
+environment properties file</li>
+  <li>Fixed compilation to allow EnvGen release to run under Java
+1.4</li>
+  <li>Minor documentation fixes</li>
+</ul>
+
+<h3>Version 1.0 - February, 2007</h3>
+<ul>
+  <li>Initial public release.</li>
+</ul>
+
+</body>
+</html>

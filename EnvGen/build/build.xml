@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="EnvGen" default="build" basedir="..">
+
+	<property name="module.name" value="EnvGen"/>
+	<property name="module.version" value="1.3.1"/>
+
+	<property name="module.jar.main.class" value="com.basilv.envgen.EnvGenApp"/>
+	
+	<property environment="env"/>
+
+	<property name="build.dir" location="build"/>
+
+	<property name="source.dir" location="src"/>
+	<property name="java.source.dir" location="${source.dir}/java"/>
+	<property name="javatest.source.dir" location="${source.dir}/javatest"/>
+	<property name="resources.source.dir" location="${source.dir}/resources"/>
+	<property name="release.source.dir" location="${source.dir}/release"/>
+
+	<property name="dist.dir" location="dist"/>
+	<property name="classes.dir" location="${dist.dir}/classes"/>
+	<property name="test.classes.dir" location="${dist.dir}/test-classes"/>
+
+	<property name="release.dir" location="${dist.dir}/release"/>
+	<property name="javadoc.dir" location="${release.dir}/javadoc"/>
+	
+	<property name="module.jar" location="${release.dir}/${module.name}.jar"/>
+	<property name="module-with-dependencies.jar" location="${release.dir}/${module.name}-with-dependencies.jar"/>
+	<property name="release.zip" location="${dist.dir}/${module.name}-${module.version}.zip"/>
+
+	<!-- Library properties -->
+	<property name="tools.dir" value="C:/Users/Basil/Dev/Tools"/>
+
+	<!-- Libraries -->
+	<property name="junit.version" value="junit4.5"/>
+	<property name="junit.name" value="JUnit"/>
+	<property name="junit.dir" location="${tools.dir}/${junit.name}/${junit.version}"/>
+	<property name="junit.jar" location="${junit.dir}/junit-4.5.jar"/>
+
+	<property name="freemarker.version" value="freemarker-2.3.15"/>
+	<property name="freemarker.name" value="FreeMarker"/>
+	<property name="freemarker.dir" location="${tools.dir}/${freemarker.name}/${freemarker.version}"/>
+	<property name="freemarker.jar" location="${freemarker.dir}/lib/freemarker.jar"/>
+
+	<property name="log4j.version" value="log4j-1.2.14"/>
+	<property name="log4j.name" value="log4j"/>
+	<property name="log4j.dir" location="${tools.dir}/${log4j.name}/logging-${log4j.version}"/>
+	<property name="log4j.jar" location="${log4j.dir}/dist/lib/${log4j.version}.jar"/>
+
+	<!-- Version 2 requires Java 5 -->
+	<property name="javacsv.version" value="javacsv-2.0"/>
+	<property name="javacsv.name" value="JavaCSV"/>
+	<property name="javacsv.dir" location="${tools.dir}/${javacsv.name}/${javacsv.version}"/>
+	<property name="javacsv.jar" location="${javacsv.dir}/javacsv.jar"/>
+
+	<!-- Use antlib instead of ant which is already used. -->
+	<property name="antlib.version" value="apache-ant-1.6.5"/>
+	<property name="antlib.name" value="Ant"/>
+	<property name="antlib.dir" location="${tools.dir}/${antlib.name}/${antlib.version}"/>
+	<property name="antlib.jar" location="${antlib.dir}/lib/ant.jar"/>
+	
+
+	<!-- Classpaths -->
+	<path id="compile.classpath">
+		<pathelement location="${freemarker.jar}"/>
+		<pathelement location="${log4j.jar}"/>
+		<pathelement location="${javacsv.jar}"/>
+		<pathelement location="${antlib.jar}"/>
+	</path>
+
+	<path id="compiletests.classpath">
+		<pathelement location="${classes.dir}"/>
+		<pathelement location="${junit.jar}"/>
+		<path refid="compile.classpath"/>
+	</path>
+
+	<path id="runtests.classpath">
+		<pathelement location="${test.classes.dir}"/>
+		<path refid="compiletests.classpath"/>
+	</path>
+
+
+
+	<!-- Targets -->
+
+	<target name="init">
+		<record name="${build.dir}/buildoutput.txt" loglevel="verbose" append="false"/>
+	</target>
+
+	<target name="clean" depends="init">
+		<delete dir="${dist.dir}"/>
+	</target>
+
+	<target name="compile" depends="init">
+		<mkdir dir="${classes.dir}"/>
+		<javac debug="on" includeAntRuntime="false" 
+			source="1.4"
+			target="1.4"
+			destdir="${classes.dir}"
+			classpathref="compile.classpath">
+			<src path="${java.source.dir}"/>
+		</javac>
+
+		<mkdir dir="${test.classes.dir}"/>
+		<javac debug="on" includeAntRuntime="false" 
+			source="1.4"
+			target="1.4"
+			destdir="${test.classes.dir}"
+			classpathref="compiletests.classpath">
+			<src path="${javatest.source.dir}"/>
+		</javac>
+
+	</target>
+
+	<target name="test" depends="init" unless="skip.test">
+		<junit fork="yes" failureproperty="tests.failed">
+			<classpath refid="runtests.classpath"/>
+			<formatter type="brief" usefile="false"/>
+			<formatter type="brief" usefile="yes"/>
+			<test name="com.basilv.envgen.AllEnvGen14Tests" todir="${dist.dir}"/>
+		</junit>
+		<fail message="Tests failed." if="tests.failed"/>
+	</target>
+
+	<macrodef name="create-module-jar">
+		<attribute name="jarfile" default="${module.jar}"/>
+		<element name="filesets" implicit="yes" optional="true"/>
+		<sequential>
+			<jar jarfile="@{jarfile}" compress="true">
+				<fileset dir="${classes.dir}"/>
+				<fileset dir="${resources.source.dir}"/>
+				<manifest>
+					<attribute name="Main-Class" value="${module.jar.main.class}"/>
+					<section name="version" >
+						<attribute name="Implementation-Title" value="${module.name}"/>
+						<attribute name="Implementation-Version" value="${module.version}"/>
+						<attribute name="Implementation-Vendor" value="Basil Vandegriend"/>
+					</section>
+				</manifest>
+
+				<filesets/>
+			</jar>
+		</sequential>
+	</macrodef>
+
+	<target name="package-init" depends="init">
+		<mkdir dir="${release.dir}"/>
+	</target>
+
+	
+	<target name="package-jar" depends="package-init, compile">
+		<create-module-jar/>
+		
+		<create-module-jar jarfile="${module-with-dependencies.jar}">
+			<zipfileset src="${freemarker.jar}"/>
+			<zipfileset src="${javacsv.jar}"/>
+			<zipfileset src="${log4j.jar}"/>
+		</create-module-jar>		
+
+		<taskdef name="envgen"
+	        classname="com.basilv.envgen.EnvGenTask"
+	        classpath="${module-with-dependencies.jar}"
+	    />		
+	</target>
+
+	<target name="package-release-dir" depends="package-init">
+		<copy todir="${release.dir}">
+			<fileset dir="${release.source.dir}"/>
+		</copy>
+
+		<copy todir="${release.dir}/src">
+			<fileset dir="${source.dir}"/>
+		</copy>
+
+		<copy todir="${release.dir}/build">
+			<fileset file="build/build.xml"/>
+		</copy>
+
+		<!-- Create dependencies file. -->
+		<property name="dependencies.file" location="${release.dir}/dependencies-list.txt"/>
+	    <property name="nl" value="&#x000D;&#x000A;"/>
+
+		<echo file="${dependencies.file}">${nl}</echo>
+		<echo file="${dependencies.file}">Libraries Used by EnvGen: ${nl}</echo>
+		<echo file="${dependencies.file}" append="true">FreeMarker: ${freemarker.version} ${nl}</echo>
+		<echo file="${dependencies.file}" append="true">Log4j: ${log4j.version} ${nl}</echo>
+		<echo file="${dependencies.file}" append="true">JavaCSV: ${javacsv.version} ${nl}</echo>
+		
+		<!-- Run example build in release folder. -->
+		<ant antfile="${release.dir}/example/build.xml" target="build"
+			inheritall="false"
+		 	dir="${release.dir}/example"/>
+		
+	</target>
+
+	<target name="javadoc" depends="package-init, package-release-dir">
+		<javadoc
+			destdir="${javadoc.dir}"
+		    use="true"
+			access="protected"
+			failOnError="true"
+			source="1.5"
+			linksource="yes"
+		    windowtitle="EnvGen API Documentation"
+			classpathref="compile.classpath"
+			>
+		
+		    <fileset dir="${release.dir}/src/java" defaultexcludes="yes"/>
+		
+		    <doctitle><![CDATA[<h1>EnvGen API Documentation</h1>]]></doctitle>
+		    <bottom><![CDATA[<small> EnvGen available from <a href="http://www.basilv.com/psd/software">www.basilv.com/psd/software</a>  Copyright &#169; 2007 Basil Vandegriend. All Rights Reserved.</small>]]></bottom>
+		    
+		    <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+			<link href="http://freemarker.sourceforge.net/docs/api/"/>
+		</javadoc>		
+	</target>
+	
+	<target name="package" depends="package-init, package-jar, package-release-dir, javadoc">
+		<zip destfile="${release.zip}">
+			<zipfileset dir="${release.dir}" prefix="${module.name}-${module.version}"/>
+		</zip>
+	</target>
+
+	<target name="integration-test" depends="package-jar"
+		description="Perform integration testing.">
+		<property name="integration-test.target.dir" location="${build.dir}/integrationTestTarget"/>
+		<delete dir="${integration-test.target.dir}"/>
+		<envgen destdir="${integration-test.target.dir}"
+			envPropertiesFile="${source.dir}/testResources/envProperties.csv"
+			overwrite="false"
+			stripFileExtension="false"
+			>
+			<source dir="${source.dir}/testSource"/>
+			<transform name="mainframeFileFormat" class="com.basilv.envgen.MainframeFileFormatTransform"/>
+			<transform name="skipGeneration" class="com.basilv.envgen.SkipGenerationTransform"/>
+			<sharedVariable name="this.variable" value="value"/>
+		</envgen>
+	</target>
+
+	
+	<target name="dist"
+		depends="init, compile, package"
+		description="Produces distributables: compiles and packages the release."/>
+
+	<target name="build"
+		depends="init, dist, test, integration-test"
+		description="Produces distributables and tests."/>
+
+	<target name="all"
+		depends="init, clean, build"
+		description="Cleans and builds."/>
+		
+</project>
+

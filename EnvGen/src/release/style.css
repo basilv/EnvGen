@@ -1,0 +1,77 @@
+
+/* Default settings for all HTML elements. */
+body {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: small;
+}
+
+h1 {
+	font-size: large;
+	margin-top: 0.3em;
+	margin-bottom: 0.5em;
+	padding: 0.3em;
+	background-color: #e8f4ff;
+	color: black;
+}
+
+h2 { 
+	font-size: medium;
+	margin-top: 0.5em;
+	margin-bottom: 0.3em;
+	padding-top: 0.2em;
+	border-top: solid thin gray; 
+}
+
+h3, h4 {
+	font-size: small;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
+
+h5 {
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
+
+p {
+	margin-top: 0.5em;
+	text-align: justify;
+}
+
+ol, ul, dl {
+	margin-top: 0.1em;
+	}
+	
+div.footer {
+	border-top: solid thin gray; 
+	font-size: x-small;
+	}
+
+pre { 
+	border: solid 1px black; 
+	background-color: #e8f4ff; 
+	color: black; 
+	padding: 0.5em; 
+	margin-left: 2em; 
+	margin-right: 2em;
+}
+
+/* must also specify cellspacing="0" for the table */
+table.fancy {
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+}
+
+.fancy td, .fancy th {
+	border-left: 1px solid black;
+	border-top: 1px solid black;
+	padding-left: 0.3em;
+	padding-right: 0.3em;
+	padding-top: 0.1em;
+	padding-bottom: 0.1em;
+}
+
+.fancy th {
+	background-color: #d8edff;
+	color: black;
+}

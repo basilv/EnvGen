@@ -1,0 +1,7 @@
+
+env=${env}
+dir=${dir}
+
+<#if env == "devl">
+	<@skipGeneration/>
+</#if>

@@ -1,0 +1,7 @@
+
+- Flatten option
+- Support Excel spreadsheet format
+- Arguments for transforms
+- EmptyDirs option (preserve empty directories in source tree)
+- Address TODOs in code
+- Better API documentation
